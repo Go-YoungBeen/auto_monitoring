@@ -25,8 +25,12 @@ public class SlackUploader {
 
             // Slack 파일 업로드 요청 데이터 생성
             String payload = "--boundary\r\n"
+                    + "Content-Disposition: form-data; name=\"channels\"\r\n\r\n"
+                    + SLACK_CHANNEL + "\r\n"
+                    + "--boundary\r\n"
                     + "Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"\r\n"
                     + "Content-Type: application/octet-stream\r\n\r\n";
+
             String endPayload = "\r\n--boundary--";
 
             // 전송
