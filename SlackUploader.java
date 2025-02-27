@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SlackUploader {
     private static final String SLACK_TOKEN = System.getenv("SLACK_BOT_TOKEN"); // GitHub Secrets 사용
-    private static final String SLACK_CHANNEL = "your-channel-id"; // 실제 채널 ID 입력
+    private static final String SLACK_CHANNEL = "C08E97AN0R3"; // 실제 채널 ID 입력
 
     public static void uploadFileToSlack(File file, String message) {
         try {
