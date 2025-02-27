@@ -54,6 +54,18 @@ class Monitoring {
             }
             logger.info(Arrays.toString(result));
             File file = new File("%d_%s.txt".formatted(new Date().getTime(), keyword));
+
+            String folderPath = "result";  // 저장할 폴더 경로
+            File dir = new File(folderPath);
+            if (!dir.exists()) {
+            ir.mkdirs(); // 폴더가 없으면 생성
+                }
+
+            File file = new File("%s/%d_%s.txt".formatted(folderPath, new Date().getTime(), keyword));
+            Path path = Path.of("%s/%d_%s.%s".formatted(folderPath, new Date().getTime(), keyword, tmp2[tmp2.length - 1]));  
+
+
+
             if (!file.exists()) {
                 logger.info(file.createNewFile() ? "신규 생성" : "이미 있음");
             }
