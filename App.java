@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
@@ -31,12 +32,24 @@ enum SortType {
 
 class Monitoring {
     private final Logger logger;
+    private final String resultDir = "result";
 
     public Monitoring() {
 //        logger = Logger.getLogger("Monitoring");
         logger = Logger.getLogger(Monitoring.class.getName());
         logger.setLevel(Level.SEVERE);
         logger.info("Monitoring 객체 생성");
+        
+        // Create result directory if it doesn't exist
+        createResultDirectory();
+    }
+    
+    private void createResultDirectory() {
+        File resultDirectory = new File(resultDir);
+        if (!resultDirectory.exists()) {
+            boolean created = resultDirectory.mkdir();
+            logger.info(created ? "결과 디렉토리 생성 성공" : "결과 디렉토리 생성 실패");
+        }
     }
 
     // 1. 검색어를 통해서 최근 10개의 뉴스를 받아올게요
@@ -53,18 +66,9 @@ class Monitoring {
                 result[i - 1] = tmp[i].split("\",")[0];
             }
             logger.info(Arrays.toString(result));
-            File file = new File("%d_%s.txt".formatted(new Date().getTime(), keyword));
-
-            String folderPath = "result";  // 저장할 폴더 경로
-            File dir = new File(folderPath);
-            if (!dir.exists()) {
-            ir.mkdirs(); // 폴더가 없으면 생성
-                }
-
-            File file = new File("%s/%d_%s.txt".formatted(folderPath, new Date().getTime(), keyword));
-            Path path = Path.of("%s/%d_%s.%s".formatted(folderPath, new Date().getTime(), keyword, tmp2[tmp2.length - 1]));  
-
-
+            
+            // Update file path to save in result directory
+            File file = new File(resultDir + File.separator + "%d_%s.txt".formatted(new Date().getTime(), keyword));
 
             if (!file.exists()) {
                 logger.info(file.createNewFile() ? "신규 생성" : "이미 있음");
@@ -88,10 +92,18 @@ class Monitoring {
                     .uri(URI.create(imageLink))
                     .build();
             String[] tmp2 = imageLink.split("\\.");
-            Path path = Path.of("%d_%s.%s".formatted(
+            
+            // Update path to save image in result directory
+            Path path = Path.of(resultDir + File.separator + "%d_%s.%s".formatted(
                     new Date().getTime(), keyword, tmp2[tmp2.length - 1]));
+                    
+            // Ensure parent directory exists
+            Files.createDirectories(path.getParent());
+            
             HttpClient.newHttpClient().send(request,
                     HttpResponse.BodyHandlers.ofFile(path));
+                    
+            logger.info("파일이 result 폴더에 저장되었습니다: " + path);
         } catch (Exception e) {
             logger.severe(e.getMessage());
         }
