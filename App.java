@@ -1,5 +1,3 @@
-package ex04;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
